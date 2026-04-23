@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { ROUTES, type Route, type Poi } from './data/routes'
 import { RouteMap } from './components/RouteMap'
+import { WeatherBar } from './components/WeatherBar'
 import {
   IconRoute, IconMap, IconList, IconUser,
   IconArrowLeft, IconChevronRight, IconX,
@@ -78,6 +79,9 @@ export default function App() {
           onPoiClick={handlePoiClick}
         />
       )}
+
+      {/* ── WEATHER BAR ── */}
+      {showMap && <WeatherBar />}
 
       {/* ── SPLASH / LOGIN ── */}
       {(view === 'splash' || view === 'login') && (
