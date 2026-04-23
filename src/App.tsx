@@ -87,7 +87,7 @@ export default function App() {
       {(view === 'splash' || view === 'login') && (
         <div className="splash-screen">
           <img
-            src="https://images.unsplash.com/photo-1471506480208-91b3a4cc78be?w=800&h=1400&fit=crop&q=85"
+            src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=1400&fit=crop&q=85"
             alt=""
             className="splash-bg"
           />

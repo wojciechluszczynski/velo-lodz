@@ -40,7 +40,7 @@ export const ROUTES: Route[] = [
     emoji: '🧸',
     description: 'Trasa śladami łódzkich bajek, animacji i wyobraźni. Rzeźby kultowych postaci rozsiane po całym mieście.',
     authorNote: 'Ta trasa ma dla mnie szczególne znaczenie — to Łódź, którą zna każdy Polak, a nie każdy wie, że to właśnie stąd pochodzi.',
-    coverPhoto: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=260&fit=crop&q=80',
+    coverPhoto: 'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&h=260&fit=crop&q=80',
     pois: [
       {
         id: 'b01',
