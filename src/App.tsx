@@ -6,7 +6,7 @@ import {
   IconArrowLeft, IconChevronRight, IconX,
 } from './components/Icons'
 
-type Screen = 'login' | 'routes' | 'route'
+type View = 'login' | 'routes' | 'route' | 'map-full' | 'profile'
 
 function durationLabel(min: number) {
   const h = Math.floor(min / 60)
@@ -15,47 +15,63 @@ function durationLabel(min: number) {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('login')
+  const [view, setView] = useState<View>('login')
   const [activeRoute, setActiveRoute] = useState<Route | null>(null)
   const [selectedPoi, setSelectedPoi] = useState<Poi | null>(null)
-  const [activeNav, setActiveNav] = useState<'routes' | 'map' | 'info' | 'profile'>('routes')
+  const [navTab, setNavTab] = useState<'routes' | 'points' | 'map' | 'profile'>('routes')
 
-  const bajkowa = ROUTES[0]
-
-  const handleDemo = useCallback(() => {
-    setScreen('routes')
-    setActiveNav('routes')
+  const goDemo = useCallback(() => {
+    setView('routes')
+    setNavTab('routes')
   }, [])
 
-  const handleOpenRoute = useCallback((route: Route) => {
+  const openRoute = useCallback((route: Route) => {
     if (route.comingSoon) return
     setActiveRoute(route)
-    setScreen('route')
-    setActiveNav('map')
+    setSelectedPoi(null)
+    setView('route')
+    setNavTab('map')
   }, [])
 
-  const handleBackToRoutes = useCallback(() => {
+  const goBack = useCallback(() => {
     setActiveRoute(null)
     setSelectedPoi(null)
-    setScreen('routes')
-    setActiveNav('routes')
+    setView('routes')
+    setNavTab('routes')
   }, [])
 
   const handlePoiClick = useCallback((poi: Poi) => {
     setSelectedPoi(poi)
   }, [])
 
-  const ctaLabel = screen === 'routes' ? 'Wybierz\ntrase' : screen === 'route' ? 'Start' : 'Demo'
-  const ctaAction = screen === 'routes'
-    ? () => handleOpenRoute(bajkowa)
-    : screen === 'route'
-    ? () => {}
-    : handleDemo
+  const handleNavTab = useCallback((tab: 'routes' | 'points' | 'map' | 'profile') => {
+    setNavTab(tab)
+    if (tab === 'routes') {
+      if (view === 'route' || view === 'map-full') goBack()
+      else setView('routes')
+    } else if (tab === 'map') {
+      setView('map-full')
+    } else if (tab === 'points') {
+      if (activeRoute) setView('route')
+    } else if (tab === 'profile') {
+      setView('profile')
+    }
+  }, [view, activeRoute, goBack])
+
+  const ctaClick = useCallback(() => {
+    if (view === 'routes') openRoute(ROUTES[0])
+    else if (view === 'map-full') { setView('route'); setNavTab('map') }
+    else if (view === 'profile') goDemo()
+  }, [view, openRoute, goDemo])
+
+  const ctaText = view === 'route' ? 'Start' : view === 'map-full' ? 'Lista' : view === 'profile' ? 'Demo' : 'Jedź!'
+  const showMap = view !== 'login' && view !== 'profile'
+  const showNav = view !== 'login'
 
   return (
     <div className="app-frame">
-      {/* MAP — always rendered when not on login */}
-      {screen !== 'login' && (
+      {/* MAP BG */}
+      {showMap && (
         <RouteMap
           pois={activeRoute?.pois ?? []}
           selectedPoiId={selectedPoi?.id ?? null}
@@ -63,186 +79,223 @@ export default function App() {
         />
       )}
 
-      {/* LOGIN SCREEN */}
-      {screen === 'login' && (
+      {/* ── LOGIN ── */}
+      {view === 'login' && (
         <div className="login-screen">
           <div className="login-logo-area">
             <div className="login-logo">VL</div>
-            <div>
-              <div className="login-title">VeloLodz</div>
-              <div className="login-subtitle">EC1 Nakrca · Sezon 6 · 2026</div>
+            <div className="login-titles">
+              <div className="login-title">VeloŁódź</div>
+              <div className="login-subtitle">EC1 Nakręca · Sezon 6 · 2026</div>
             </div>
           </div>
           <div className="login-card">
             <input className="input-field" type="email" placeholder="twoj@email.pl" autoComplete="email" />
-            <input className="input-field" type="password" placeholder="Haslo" autoComplete="current-password" />
-            <button className="btn-primary">Zaloguj sie</button>
+            <input className="input-field" type="password" placeholder="Hasło" autoComplete="current-password" />
+            <button className="btn-primary">Zaloguj się</button>
             <div className="divider-row">lub</div>
-            <button className="btn-ghost" onClick={handleDemo}>
-              <strong>Zobacz bez logowania</strong> &rarr;
+            <button className="btn-ghost" onClick={goDemo}>
+              <strong>Zobacz bez logowania</strong> →
             </button>
           </div>
         </div>
       )}
 
-      {/* ROUTES PANEL */}
-      {screen === 'routes' && (
+      {/* ── ROUTES PANEL ── */}
+      {view === 'routes' && (
         <div className="content-panel">
-          <div className="routes-panel">
+          <div className="bottom-sheet">
             <div className="panel-handle" />
-            <div className="routes-header">
-              <div className="routes-title">Trasy</div>
-              <div className="routes-subtitle">Odkryj Lodz na dwoch kolkach</div>
-            </div>
-            <div className="routes-list">
-              {ROUTES.map(route => (
-                <div
-                  key={route.id}
-                  className={`route-card${route.comingSoon ? ' coming-soon' : ''}`}
-                  onClick={() => handleOpenRoute(route)}
-                >
-                  <img src={route.coverPhoto} alt={route.name} className="route-card-img" />
+            <div className="sheet-scroll">
+              <div className="section-label">Trasy</div>
+              <div className="section-sub">Odkryj Łódź na dwóch kółkach</div>
+              <div className="routes-list">
+                {ROUTES.map(route => (
                   <div
-                    className={`route-card-badge${!route.comingSoon ? ' active' : ''}`}
+                    key={route.id}
+                    className={`route-card${route.comingSoon ? ' coming-soon' : ''}`}
+                    onClick={() => openRoute(route)}
+                    role="button"
+                    tabIndex={0}
                   >
-                    {route.comingSoon ? 'wkrotce' : 'dostepna'}
-                  </div>
-                  <div className="route-card-body">
-                    <div className="route-card-info">
-                      <div className="route-card-name">{route.name}</div>
-                      <div className="route-card-meta">
-                        <span>{route.distanceKm} km</span>
-                        <span>{durationLabel(route.durationMinutes)}</span>
-                        <span>{route.difficulty}</span>
+                    <div className="route-card-img-wrap">
+                      <img src={route.coverPhoto} alt={route.name} className="route-card-img" loading="lazy" />
+                      <div className="route-card-img-overlay" />
+                      <div className={`route-badge${route.comingSoon ? '' : ' route-badge--active'}`}>
+                        {route.comingSoon ? 'wkrótce' : 'dostępna'}
                       </div>
                     </div>
-                    {!route.comingSoon && <IconChevronRight size={20} />}
+                    <div className="route-card-body">
+                      <div className="route-card-left">
+                        <div className="route-card-name">{route.name}</div>
+                        <div className="route-card-meta">
+                          <span>{route.distanceKm} km</span>
+                          <span className="meta-dot">·</span>
+                          <span>{durationLabel(route.durationMinutes)}</span>
+                          <span className="meta-dot">·</span>
+                          <span>{route.difficulty}</span>
+                        </div>
+                      </div>
+                      {!route.comingSoon && (
+                        <div className="route-card-arrow"><IconChevronRight size={18} /></div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ROUTE DETAIL PANEL */}
-      {screen === 'route' && activeRoute && (
+      {/* ── ROUTE DETAIL PANEL ── */}
+      {view === 'route' && activeRoute && (
         <div className="content-panel">
-          <div className="route-detail-panel">
-            <div className="route-detail-header">
-              <div className="panel-handle" />
-              <button className="back-btn" onClick={handleBackToRoutes}>
-                <IconArrowLeft /> Trasy
+          <div className="bottom-sheet">
+            <div className="panel-handle" />
+            <div className="sheet-scroll">
+              <button className="back-btn" onClick={goBack}>
+                <IconArrowLeft size={16} /> Trasy
               </button>
-              <div style={{ marginBottom: 4, fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.01em' }}>
-                {activeRoute.name}
-              </div>
-              <div className="route-stats">
-                <div className="route-stat">
-                  <div className="route-stat-value">{activeRoute.distanceKm} km</div>
-                  <div className="route-stat-label">dystans</div>
-                </div>
-                <div className="route-stat">
-                  <div className="route-stat-value">{durationLabel(activeRoute.durationMinutes)}</div>
-                  <div className="route-stat-label">czas</div>
-                </div>
-                <div className="route-stat">
-                  <div className="route-stat-value">{activeRoute.pois.length}</div>
-                  <div className="route-stat-label">punktow</div>
-                </div>
-              </div>
-            </div>
-            <div className="poi-list">
-              {activeRoute.pois.map(poi => (
-                <div
-                  key={poi.id}
-                  className={`poi-item${selectedPoi?.id === poi.id ? ' selected' : ''}`}
-                  onClick={() => handlePoiClick(poi)}
-                >
-                  <div className="poi-dot">{poi.order}</div>
-                  <div className="poi-item-text">
-                    <div className="poi-item-name">{poi.name}</div>
-                    <div className="poi-item-desc">{poi.shortDesc}</div>
+              <div className="route-header">
+                <div className="route-name">{activeRoute.name}</div>
+                <div className="route-stats-row">
+                  <div className="stat-chip">
+                    <span className="stat-val">{activeRoute.distanceKm} km</span>
+                    <span className="stat-lbl">dystans</span>
                   </div>
-                  <IconChevronRight size={16} />
+                  <div className="stat-divider" />
+                  <div className="stat-chip">
+                    <span className="stat-val">{durationLabel(activeRoute.durationMinutes)}</span>
+                    <span className="stat-lbl">czas</span>
+                  </div>
+                  <div className="stat-divider" />
+                  <div className="stat-chip">
+                    <span className="stat-val">{activeRoute.pois.length}</span>
+                    <span className="stat-lbl">punktów</span>
+                  </div>
                 </div>
-              ))}
+              </div>
+              <div className="poi-list">
+                {activeRoute.pois.map(poi => (
+                  <button
+                    key={poi.id}
+                    className={`poi-item${selectedPoi?.id === poi.id ? ' poi-item--active' : ''}`}
+                    onClick={() => handlePoiClick(poi)}
+                  >
+                    <div className={`poi-num${selectedPoi?.id === poi.id ? ' poi-num--active' : ''}`}>
+                      {poi.order}
+                    </div>
+                    <div className="poi-text">
+                      <div className="poi-name">{poi.name}</div>
+                      <div className="poi-desc">{poi.shortDesc}</div>
+                    </div>
+                    <IconChevronRight size={14} />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* POI DETAIL SHEET */}
+      {/* ── MAP FULL VIEW — hint ── */}
+      {view === 'map-full' && (
+        <div className="map-hint">
+          <div className="map-hint-pill">Dotknij marker, aby zobaczyć szczegóły</div>
+        </div>
+      )}
+
+      {/* ── PROFILE ── */}
+      {view === 'profile' && (
+        <div className="profile-screen">
+          <div className="profile-header">
+            <div className="profile-avatar">VL</div>
+            <div className="profile-name">Tryb demo</div>
+            <div className="profile-sub">Zaloguj się, aby zapisywać postęp</div>
+          </div>
+          <div className="profile-stats-grid">
+            <div className="profile-stat"><span className="profile-stat-val">0</span><span className="profile-stat-lbl">tras ukończonych</span></div>
+            <div className="profile-stat"><span className="profile-stat-val">0</span><span className="profile-stat-lbl">punktów zebranych</span></div>
+            <div className="profile-stat"><span className="profile-stat-val">0</span><span className="profile-stat-lbl">km przejechanych</span></div>
+            <div className="profile-stat"><span className="profile-stat-val">0</span><span className="profile-stat-lbl">odznak zdobytych</span></div>
+          </div>
+          <div className="profile-badges-title">Odznaki</div>
+          <div className="badges-grid">
+            {['Odkrywca', 'Turysta', 'Znawca Łodzi', 'Bajkowy', 'Kinoman', 'Energetyk'].map(b => (
+              <div key={b} className="badge-chip badge-chip--locked">
+                <div className="badge-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <div className="badge-label">{b}</div>
+              </div>
+            ))}
+          </div>
+          <button className="btn-primary" style={{ margin: '24px 20px 0' }} onClick={goDemo}>
+            Przeglądaj trasy
+          </button>
+        </div>
+      )}
+
+      {/* ── POI DETAIL SHEET ── */}
       {selectedPoi && (
         <div className="modal-overlay" onClick={() => setSelectedPoi(null)}>
           <div className="modal-sheet" onClick={e => e.stopPropagation()}>
-            <div className="sheet-handle" />
-            <div className="sheet-poi-header">
-              <div className="sheet-poi-num">{selectedPoi.order}</div>
-              <div className="sheet-poi-name">{selectedPoi.name}</div>
-              <button
-                onClick={() => setSelectedPoi(null)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', padding: 4, flexShrink: 0 }}
-              >
-                <IconX />
-              </button>
+            <div className="panel-handle" />
+            <div className="poi-sheet-header">
+              <div className={`poi-num poi-num--lg`}>{selectedPoi.order}</div>
+              <div className="poi-sheet-name">{selectedPoi.name}</div>
+              <button className="icon-btn" onClick={() => setSelectedPoi(null)}><IconX size={20} /></button>
             </div>
             {selectedPoi.needsVerification && (
-              <div className="verification-badge">
-                ⚠ Polozenie do weryfikacji
-              </div>
+              <div className="verify-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline',verticalAlign:'middle',marginRight:6}}><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Położenie do weryfikacji terenowej</div>
             )}
-            <p className="sheet-description">{selectedPoi.description}</p>
+            <p className="poi-sheet-desc">{selectedPoi.description}</p>
             {selectedPoi.authorComment && (
-              <div className="author-comment">
-                <p>{selectedPoi.authorComment}</p>
-                <div className="author-signature">Arkadiusz Luszczynski · Lodz na Rowerze</div>
+              <div className="author-block">
+                <p className="author-text">{selectedPoi.authorComment}</p>
+                <div className="author-sig">Arkadiusz Łuszczyński · Łódź na Rowerze</div>
               </div>
             )}
           </div>
         </div>
       )}
 
-      {/* BOTTOM NAV — SkyCash style */}
-      {screen !== 'login' && (
+      {/* ── BOTTOM NAV ── */}
+      {showNav && (
         <nav className="bottom-nav">
           <button
-            className={`nav-btn${activeNav === 'routes' ? ' active' : ''}`}
-            onClick={() => { setActiveNav('routes'); if (screen === 'route') handleBackToRoutes() }}
+            className={`nav-btn${navTab === 'routes' ? ' nav-btn--active' : ''}`}
+            onClick={() => handleNavTab('routes')}
           >
-            <IconRoute size={20} />
+            <IconRoute size={22} />
             <span>Trasy</span>
           </button>
           <button
-            className={`nav-btn${activeNav === 'info' ? ' active' : ''}`}
-            onClick={() => setActiveNav('info')}
+            className={`nav-btn${navTab === 'points' ? ' nav-btn--active' : ''}`}
+            onClick={() => handleNavTab('points')}
           >
-            <IconList size={20} />
+            <IconList size={22} />
             <span>Punkty</span>
           </button>
-
-          {/* CENTER CTA */}
-          <div className="nav-center-col">
-            <button className="nav-cta" onClick={ctaAction}>
-              {ctaLabel.split('\n').map((line, i) => <span key={i} style={{ display: 'block' }}>{line}</span>)}
+          <div className="nav-cta-col">
+            <button className="nav-cta" onClick={ctaClick}>
+              <span className="nav-cta-text">{ctaText}</span>
             </button>
-            <div className="nav-cta-label">
-              {screen === 'route' ? 'Startuj' : 'Odkryj'}
-            </div>
+            <span className="nav-cta-lbl">
+              {view === 'route' ? 'Startuj' : view === 'map-full' ? 'Wróć' : 'Odkryj'}
+            </span>
           </div>
-
           <button
-            className={`nav-btn${activeNav === 'map' ? ' active' : ''}`}
-            onClick={() => setActiveNav('map')}
+            className={`nav-btn${navTab === 'map' ? ' nav-btn--active' : ''}`}
+            onClick={() => handleNavTab('map')}
           >
-            <IconMap size={20} />
+            <IconMap size={22} />
             <span>Mapa</span>
           </button>
           <button
-            className={`nav-btn${activeNav === 'profile' ? ' active' : ''}`}
-            onClick={() => setActiveNav('profile')}
+            className={`nav-btn${navTab === 'profile' ? ' nav-btn--active' : ''}`}
+            onClick={() => handleNavTab('profile')}
           >
-            <IconUser size={20} />
+            <IconUser size={22} />
             <span>Profil</span>
           </button>
         </nav>

@@ -1,4 +1,3 @@
-'use client'
 import { useEffect, useRef } from 'react'
 import L from 'leaflet'
 import type { Poi } from '../data/routes'
@@ -20,10 +19,12 @@ function makeMarkerIcon(label: string, selected: boolean) {
 }
 
 function makeEndpointIcon(type: 'start' | 'end') {
-  const emoji = type === 'start' ? '🟢' : '🏁'
+  const inner = type === 'start'
+    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="10"/></svg>`
+    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>`
   return L.divIcon({
     className: '',
-    html: `<div class="map-marker-${type}">${emoji}</div>`,
+    html: `<div class="map-marker-${type}">${inner}</div>`,
     iconSize: [28, 28],
     iconAnchor: [14, 14],
   })
@@ -44,8 +45,9 @@ export function RouteMap({ pois, selectedPoiId, onPoiClick }: Props) {
       attributionControl: false,
     })
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
+      attribution: '© CartoDB © OSM',
     }).addTo(map)
 
     L.marker([START_POINT.lat, START_POINT.lng], {
