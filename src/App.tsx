@@ -79,50 +79,52 @@ export default function App() {
         />
       )}
 
-      {/* ── SPLASH ── */}
-      {view === 'splash' && (
+      {/* ── SPLASH / LOGIN ── */}
+      {(view === 'splash' || view === 'login') && (
         <div className="splash-screen">
           <img
-            src="https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=800&h=1400&fit=crop&q=85"
+            src="https://images.unsplash.com/photo-1471506480208-91b3a4cc78be?w=800&h=1400&fit=crop&q=85"
             alt=""
             className="splash-bg"
           />
           <div className="splash-overlay" />
-          <div className="splash-content">
-            <div className="splash-logo-wrap">
-              <div className="splash-logo">VL</div>
-              <div className="splash-title">VeloŁódź</div>
-              <div className="splash-sub">EC1 Nakręca · Sezon 6 · 2026</div>
+          <div className="splash-top">
+            <div className="splash-logo">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="8" cy="22" r="5" stroke="white" strokeWidth="2.5"/>
+                <circle cx="24" cy="22" r="5" stroke="white" strokeWidth="2.5"/>
+                <path d="M8 22 L14 10 L20 14 L24 22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="14" cy="10" r="2" fill="white"/>
+              </svg>
             </div>
-            <div className="splash-tagline">Odkryj Łódź<br />na dwóch kółkach</div>
-            <div className="splash-actions">
-              <button className="btn-primary" onClick={() => setView('login')}>Zaloguj się</button>
-              <button className="btn-ghost" onClick={goDemo}>
-                <strong>Zobacz bez logowania</strong> →
-              </button>
+            <div>
+              <div className="splash-title"><span>VELO</span><span className="splash-title-accent">ŁÓDŹ</span></div>
+              <div className="splash-sub">Arkadiusz Łuszczyński · Sezon 6 · 2026</div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* ── LOGIN ── */}
-      {view === 'login' && (
-        <div className="login-screen">
-          <div className="login-logo-area">
-            <div className="login-logo">VL</div>
-            <div className="login-titles">
-              <div className="login-title">VeloŁódź</div>
-              <div className="login-subtitle">EC1 Nakręca · Sezon 6 · 2026</div>
+          <div className="login-card-bottom">
+            <div className="login-card-handle" />
+            <div className="login-card-heading">Zaloguj się</div>
+            <div className="login-card-sub">Aplikacja dostępna dla uczestników projektu</div>
+            <div className="login-field-label">EMAIL</div>
+            <div className="login-field-wrap">
+              <svg className="login-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <input className="login-field-input" type="email" placeholder="twoj@email.pl" autoComplete="email" />
             </div>
-          </div>
-          <div className="login-card">
-            <input className="input-field" type="email" placeholder="twoj@email.pl" autoComplete="email" />
-            <input className="input-field" type="password" placeholder="Hasło" autoComplete="current-password" />
-            <button className="btn-primary">Zaloguj się</button>
-            <div className="divider-row">lub</div>
-            <button className="btn-ghost" onClick={goDemo}>
+            <div className="login-field-label" style={{display:'flex',justifyContent:'space-between'}}>
+              <span>HASŁO</span>
+              <span className="login-forgot">Przypomnij hasło</span>
+            </div>
+            <div className="login-field-wrap">
+              <svg className="login-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input className="login-field-input" type="password" placeholder="••••••••" autoComplete="current-password" />
+            </div>
+            <button className="btn-primary" style={{marginTop: 8}}>Zaloguj się</button>
+            <button className="btn-ghost" onClick={goDemo} style={{marginTop: 4}}>
               <strong>Zobacz bez logowania</strong> →
             </button>
+            <div className="login-credit">Arkadiusz Łuszczyński · Łódź na Rowerze</div>
           </div>
         </div>
       )}
@@ -255,9 +257,9 @@ export default function App() {
               </div>
             ))}
           </div>
-          <button className="btn-primary" style={{ margin: '24px 20px 0' }} onClick={goDemo}>
-            Przeglądaj trasy
-          </button>
+          <div style={{ padding: '24px 20px 0' }}>
+            <button className="btn-primary" onClick={goDemo}>Przeglądaj trasy</button>
+          </div>
         </div>
       )}
 
