@@ -8,6 +8,7 @@ export interface Poi {
   lat: number
   lng: number
   emoji: string
+  photo?: string
   needsVerification?: boolean
 }
 
@@ -51,6 +52,7 @@ export const ROUTES: Route[] = [
         lat: 51.7639191,
         lng: 19.4123,
         emoji: '🐊',
+        photo: 'https://images.unsplash.com/photo-1566438480900-0609be27a4be?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b02',
@@ -62,6 +64,7 @@ export const ROUTES: Route[] = [
         lat: 51.7646794,
         lng: 19.4212961,
         emoji: '🐧',
+        photo: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b03',
@@ -73,6 +76,7 @@ export const ROUTES: Route[] = [
         lat: 51.7462529,
         lng: 19.4642973,
         emoji: '🐻',
+        photo: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b04',
@@ -84,6 +88,7 @@ export const ROUTES: Route[] = [
         lat: 51.7594866,
         lng: 19.4635838,
         emoji: '🧡',
+        photo: 'https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b05',
@@ -95,6 +100,7 @@ export const ROUTES: Route[] = [
         lat: 51.7595364,
         lng: 19.4739103,
         emoji: '🐱',
+        photo: 'https://images.unsplash.com/photo-1444465693019-aa0b6392460d?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b06',
@@ -106,6 +112,7 @@ export const ROUTES: Route[] = [
         lat: 51.7605557,
         lng: 19.4792533,
         emoji: '🐦',
+        photo: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b07',
@@ -117,6 +124,7 @@ export const ROUTES: Route[] = [
         lat: 51.7589686,
         lng: 19.458257,
         emoji: '🦄',
+        photo: 'https://images.unsplash.com/photo-1549789015-d0f0dcc1d1e2?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b08',
@@ -128,6 +136,7 @@ export const ROUTES: Route[] = [
         lat: 51.7664887,
         lng: 19.4568139,
         emoji: '🧸',
+        photo: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b09',
@@ -139,6 +148,7 @@ export const ROUTES: Route[] = [
         lat: 51.7692342,
         lng: 19.4625163,
         emoji: '✏️',
+        photo: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b10',
@@ -150,6 +160,7 @@ export const ROUTES: Route[] = [
         lat: 51.768703,
         lng: 19.460687,
         emoji: '🎵',
+        photo: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=700&h=400&fit=crop&q=80',
       },
       {
         id: 'b11',
@@ -162,6 +173,7 @@ export const ROUTES: Route[] = [
         lng: 19.464882,
         needsVerification: true,
         emoji: '🖍️',
+        photo: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=700&h=400&fit=crop&q=80',
       },
     ],
   },

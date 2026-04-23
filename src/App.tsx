@@ -6,7 +6,7 @@ import {
   IconArrowLeft, IconChevronRight, IconX,
 } from './components/Icons'
 
-type View = 'login' | 'routes' | 'route' | 'map-full' | 'profile'
+type View = 'splash' | 'login' | 'routes' | 'route' | 'map-full' | 'profile'
 
 function durationLabel(min: number) {
   const h = Math.floor(min / 60)
@@ -15,7 +15,7 @@ function durationLabel(min: number) {
 }
 
 export default function App() {
-  const [view, setView] = useState<View>('login')
+  const [view, setView] = useState<View>('splash')
   const [activeRoute, setActiveRoute] = useState<Route | null>(null)
   const [selectedPoi, setSelectedPoi] = useState<Poi | null>(null)
   const [navTab, setNavTab] = useState<'routes' | 'points' | 'map' | 'profile'>('routes')
@@ -65,8 +65,8 @@ export default function App() {
   }, [view, openRoute, goDemo])
 
   const ctaText = view === 'route' ? 'Start' : view === 'map-full' ? 'Lista' : view === 'profile' ? 'Demo' : 'Jedź!'
-  const showMap = view !== 'login' && view !== 'profile'
-  const showNav = view !== 'login'
+  const showMap = view !== 'splash' && view !== 'login' && view !== 'profile'
+  const showNav = view !== 'splash' && view !== 'login'
 
   return (
     <div className="app-frame">
@@ -77,6 +77,32 @@ export default function App() {
           selectedPoiId={selectedPoi?.id ?? null}
           onPoiClick={handlePoiClick}
         />
+      )}
+
+      {/* ── SPLASH ── */}
+      {view === 'splash' && (
+        <div className="splash-screen">
+          <img
+            src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=1400&fit=crop&q=85"
+            alt=""
+            className="splash-bg"
+          />
+          <div className="splash-overlay" />
+          <div className="splash-content">
+            <div className="splash-logo-wrap">
+              <div className="splash-logo">VL</div>
+              <div className="splash-title">VeloŁódź</div>
+              <div className="splash-sub">EC1 Nakręca · Sezon 6 · 2026</div>
+            </div>
+            <div className="splash-tagline">Odkryj Łódź<br />na dwóch kółkach</div>
+            <div className="splash-actions">
+              <button className="btn-primary" onClick={() => setView('login')}>Zaloguj się</button>
+              <button className="btn-ghost" onClick={goDemo}>
+                <strong>Zobacz bez logowania</strong> →
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ── LOGIN ── */}
@@ -240,11 +266,25 @@ export default function App() {
         <div className="modal-overlay" onClick={() => setSelectedPoi(null)}>
           <div className="modal-sheet" onClick={e => e.stopPropagation()}>
             <div className="panel-handle" />
-            <div className="poi-sheet-header">
-              <div className={`poi-num poi-num--lg`}>{selectedPoi.order}</div>
-              <div className="poi-sheet-name">{selectedPoi.name}</div>
-              <button className="icon-btn" onClick={() => setSelectedPoi(null)}><IconX size={20} /></button>
-            </div>
+            {selectedPoi.photo && (
+              <div className="poi-sheet-img-wrap">
+                <img src={selectedPoi.photo} alt={selectedPoi.name} className="poi-sheet-img" loading="lazy" />
+                <div className="poi-sheet-img-overlay" />
+                <div className="poi-sheet-img-badge">
+                  <div className="poi-num poi-num--lg">{selectedPoi.order}</div>
+                  <div className="poi-sheet-name poi-sheet-name--over">{selectedPoi.name}</div>
+                </div>
+                <button className="icon-btn icon-btn--over" onClick={() => setSelectedPoi(null)}><IconX size={20} /></button>
+              </div>
+            )}
+            {!selectedPoi.photo && (
+              <div className="poi-sheet-header">
+                <div className="poi-num poi-num--lg">{selectedPoi.order}</div>
+                <div className="poi-sheet-name">{selectedPoi.name}</div>
+                <button className="icon-btn" onClick={() => setSelectedPoi(null)}><IconX size={20} /></button>
+              </div>
+            )}
+            <div className="poi-sheet-body">
             {selectedPoi.needsVerification && (
               <div className="verify-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'inline',verticalAlign:'middle',marginRight:6}}><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Położenie do weryfikacji terenowej</div>
             )}
@@ -255,6 +295,7 @@ export default function App() {
                 <div className="author-sig">Arkadiusz Łuszczyński · Łódź na Rowerze</div>
               </div>
             )}
+            </div>
           </div>
         </div>
       )}
