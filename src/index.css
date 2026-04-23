@@ -187,7 +187,7 @@ html, body {
   right: 0;
   bottom: var(--nav-h);
   z-index: 300;
-  max-height: 58dvh;
+  max-height: 46dvh;
   display: flex;
   flex-direction: column;
 }
@@ -199,7 +199,7 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  max-height: 58dvh;
+  max-height: 46dvh;
 }
 
 .sheet-scroll {

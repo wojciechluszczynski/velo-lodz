@@ -92,6 +92,8 @@ export function RouteMap({ pois, selectedPoiId, onPoiClick }: Props) {
       marker.on('click', () => onPoiClick(poi))
       markersRef.current.set(poi.id, marker)
     })
+
+    map.fitBounds(L.latLngBounds(latlngs), { padding: [48, 48], maxZoom: 14, animate: true })
   }, [pois, onPoiClick])
 
   useEffect(() => {
